@@ -22,9 +22,18 @@ ansible-playbook -i hosts playbooks/deployHIO.yml
 
 Start HarmonicIO:
 ```
-ansible-playbook -i hosts playbooks/startMasterWorker.yaml
+ansible-playbook -i hosts playbooks/startMasterWorker.yml
 ```
 
+Stop HarmonicIO:
+```
+ansible-playbook -i hosts playbooks/stopMasterWorker.yml
+```
+
+Check if HarmonicIO running:
+```
+ansible --become-user root -i hosts workers:master -a "screen -ls"
+```
 
 # Send containers to Worker
 

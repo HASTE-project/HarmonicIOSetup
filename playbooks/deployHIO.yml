@@ -53,7 +53,7 @@
     become: yes
     apt: name=docker-engine update_cache=yes
 
-  - name: "start service"
+  - name: "start docker service"
     become: yes
     service:
       name: docker
@@ -82,6 +82,8 @@
               { "node_name": "PE Worker",
               "node_port": 8888,
               "node_addr": "{{ ansible_default_ipv4.address }}",
+              "node_internal_addr": "{{ ansible_default_ipv4.address }}",
+              "node_external_addr": "{{ ansible_default_ipv4.address }}",
               "master_addr": "{{ hostvars[item]['ansible_default_ipv4']['address'] }}",
               "master_port": 8080,
               "node_data_port_range": [9000, 9010],
