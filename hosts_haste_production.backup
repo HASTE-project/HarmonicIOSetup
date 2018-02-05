@@ -1,0 +1,34 @@
+#ansible-node ansible_ssh_host=<Ansible node private IP >
+
+masternode ansible_ssh_host=hio-prod
+
+#workernode0 ansible_ssh_host=<Worker-node node private IP >
+#workernode0 ansible_ssh_host=xxx
+workernode1 ansible_ssh_host=hio-worker-prod-1
+workernode2 ansible_ssh_host=hio-worker-prod-2
+workernode3 ansible_ssh_host=hio-worker-prod-3
+workernode4 ansible_ssh_host=hio-worker-prod-4
+workernode5 ansible_ssh_host=hio-worker-prod-5
+workernode6 ansible_ssh_host=hio-worker-prod-6
+
+
+#[configNode]
+#ansible-node ansible_connection=local ansible_user=ubuntu
+
+[master]
+masternode ansible_connection=ssh ansible_user=ubuntu
+
+[master:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[workers]
+#workernode0 ansible_connection=ssh ansible_user=ubuntu
+workernode1 ansible_connection=ssh ansible_user=ubuntu
+workernode2 ansible_connection=ssh ansible_user=ubuntu
+workernode3 ansible_connection=ssh ansible_user=ubuntu
+workernode4 ansible_connection=ssh ansible_user=ubuntu
+workernode5 ansible_connection=ssh ansible_user=ubuntu
+workernode6 ansible_connection=ssh ansible_user=ubuntu
+
+[workers:vars]
+ansible_python_interpreter=/usr/bin/python3

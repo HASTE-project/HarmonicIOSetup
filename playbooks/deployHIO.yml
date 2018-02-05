@@ -3,157 +3,107 @@
   tasks:
  
    - name: "Build hosts file"
+     become: yes
      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" state=present
      when: hostvars[item].ansible_default_ipv4.address is defined
-     with_items: "{{groups['all']}}" 
+     with_items: "{{groups['all']}}"
+
 
    - name: set hostname
+     become: yes
      hostname: name="{{inventory_hostname}}"
 
 - hosts: master:workers
   
   tasks:
 
-  - name: "add repository"
-    apt_repository:
-      repo: ppa:fkrull/deadsnakes
-
   - name: "Install python 3 and update repositories"
+    become: yes
     apt:
-      name: python3.5
+      name: python3
       update_cache: yes
 
-  - name: "Install pip"
+  - name: "Install pip3"
+    become: yes
     apt:
       name: python3-pip
       update_cache: yes
 
-  - name: "wget file"
-    get_url: 
-      url: https://bootstrap.pypa.io/ez_setup.py
-      dest: /home/ubuntu/
+- hosts: workers
 
-  - name: "install ez_setup"
-    command: python3.5 /home/ubuntu/ez_setup.py
-    become: yes
+  tasks:
 
-  - name: "Get colors"
-    git:
-      repo: https://github.com/verigak/colors.git
-      dest: /home/ubuntu/colors
-  
-  - name: "Install colors"
-    command: python3.5 setup.py install
-    args:
-      chdir: /home/ubuntu/colors/
-    become: yes
-
-  - name: "Get falcon"
-    git:
-      repo: https://github.com/falconry/falcon.git
-      dest: /home/ubuntu/falcon
-  
-  - name: "Install falcon"
-    command: python3.5 setup.py install
-    args:
-      chdir: /home/ubuntu/falcon/
-    become: yes
-
+  # Install Docker
 
   - name: "ensure repository key is installed"
+    become: yes
     apt_key:
       id: "58118E89F3A912897C070ADBF76221572C52609D"
       keyserver: "hkp://p80.pool.sks-keyservers.net:80"
       state: present
 
   - name: "ensure docker registry is available"
+    become: yes
     # For Ubuntu 14.04 LTS, use this repository:
     # apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-trusty main' state=present
     # For Ubuntu 16.04 LTS, use this repo instead:
     apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-xenial main' state=present
 
   - name: "ensure docker and dependencies are installed"
+    become: yes
     apt: name=docker-engine update_cache=yes
 
-  - service: name=docker state=restarted
-
-  - name: "Get docker-py"
-    git:
-      repo: https://github.com/docker/docker-py.git
-      dest: /home/ubuntu/docker-py
-  
-  - name: "Install docker"
-    command: python3.5 setup.py install
-    args:
-      chdir: /home/ubuntu/docker-py/
+  - name: "start docker service"
     become: yes
+    service:
+      name: docker
+      state: restarted
 
-  - name: "Download HarmonicIO files from git"
+- hosts: master:workers
+
+  tasks:
+
+  - name: "clone HarmonicIO from github"
     git:
-      repo: https://github.com/beirbear/HarmonicIO.git
+      repo: https://github.com/HASTE-Project/HarmonicIO
       dest: /home/ubuntu/HarmonicIO
-      version: CI_v0_r0
+      version: master
       force: yes
 
+  - name: "Install HarmonicIO"
+    command: pip3 install -e .
+    args:
+      chdir: /home/ubuntu/HarmonicIO
+    become: yes
+
   - name: "Setup worker IPs and ports"
-    copy: 
+    copy:
       content: |
-              { "node_name": "PE Worker", 
-              "node_port": 8888, 
-              "node_addr": "{{ ansible_default_ipv4.address }}", 
-              "master_addr": "{{ hostvars[item]['ansible_default_ipv4']['address'] }}", 
-              "master_port": 8080, 
-              "node_data_port_range": [9000, 9010], 
+              { "node_name": "PE Worker",
+              "node_port": 8888,
+              "node_addr": "{{ ansible_default_ipv4.address }}",
+              "node_internal_addr": "{{ ansible_default_ipv4.address }}",
+              "node_external_addr": "{{ ansible_default_ipv4.address }}",
+              "master_addr": "{{ hostvars[item]['ansible_default_ipv4']['address'] }}",
+              "master_port": 8080,
+              "node_data_port_range": [9000, 9010],
               "std_idle_time": 5 }
 
-      dest: /home/ubuntu/HarmonicIO/worker/configuration.json
+      dest: /home/ubuntu/HarmonicIO/harmonicIO/worker/configuration.json
     become: yes
     with_items:
       - "{{ groups['master'] }}"
 
   - name: "Setup master IPs and ports"
-    copy: 
+    copy:
       content: |
-              { "node_name": "PE Master", 
+              { "node_name": "PE Master",
               "master_addr": "{{ hostvars[item]['ansible_default_ipv4']['address'] }}",
               "node_port": 8080,
               "node_data_port_range": [8090,8099],
               "std_idle_time": 5 }
 
-      dest: /home/ubuntu/HarmonicIO/master/configuration.json
+      dest: /home/ubuntu/HarmonicIO/harmonicIO/master/configuration.json
     become: yes
     with_items:
       - "{{ groups['master'] }}"
- 
-# - hosts: master
-
-#   tasks:
-
-#   - name: "Run Master"
-#     command: screen -S H-Master -dm ./runMaster.sh
-#     args:
-#       chdir: /home/ubuntu/HarmonicIO/
-#     become_user: ubuntu
-
-
-
-- hosts: workers
-
-  tasks: 
-
-  - name: "Download HarmonicPE files from git"
-    git:
-      repo: https://github.com/beirbear/HarmonicPE.git
-      dest: /home/ubuntu/HarmonicPE
-      version: CI_v0_r0
-
-
-  # - name: "Run Worker"
-  #   command: screen -S H-Worker -dm ./runWorker.sh
-  #   args:
-  #     chdir: /home/ubuntu/HarmonicIO/
-  #   become: yes
-
-
-
-
