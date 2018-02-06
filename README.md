@@ -25,9 +25,14 @@ Start HarmonicIO:
 ansible-playbook -i hosts playbooks/startMasterWorker.yml
 ```
 
-Check if HarmonicIO is running:
+Check if HarmonicIO is running (by checking for screen sessions):
 ```
 ansible --become-user root -i hosts workers:master -a "screen -ls"
+```
+
+...by checking for the listening ports (8888 and 8080):
+```
+ansible -i hosts workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
 ```
 
 Stop HarmonicIO:
