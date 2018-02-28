@@ -19,7 +19,7 @@
     command: screen -S H-Worker -dm ./runWorker.sh
     args:
       chdir: /home/ubuntu/HarmonicIO/
-    become: yes
+    become_user: ubuntu
 
 
 

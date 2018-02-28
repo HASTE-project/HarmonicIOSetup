@@ -8,8 +8,6 @@
     become_user: ubuntu
     ignore_errors: yes
 
-
-
 - hosts: workers
 
   tasks: 
@@ -19,6 +17,13 @@
     become: yes
     ignore_errors: yes
 
+- hosts: master:workers
 
+  tasks:
+
+  - name: "Remove Dead Screens"
+    command: screen -wipe
+    become: yes
+    ignore_errors: yes
 
 

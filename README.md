@@ -27,7 +27,7 @@ ansible-playbook -i hosts playbooks/startMasterWorker.yml
 
 Check if HarmonicIO is running (by checking for screen sessions):
 ```
-ansible --become-user root -i hosts workers:master -a "screen -ls"
+ansible --become-user ubuntu -i hosts workers:master -a "screen -ls"
 ```
 
 ...by checking for the listening ports (8888 and 8080):
