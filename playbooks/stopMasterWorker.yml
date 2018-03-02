@@ -5,7 +5,14 @@
 
   - name: "Stop Master"
     command: screen -X -S H-Master quit
-    become_user: ubuntu
+    become: yes
+    ignore_errors: yes
+
+    # Stop any sessions created as non-root by mistake
+
+  - name: "Stop Master"
+    command: screen -X -S H-Master quit
+    become: no
     ignore_errors: yes
 
 - hosts: workers
@@ -15,6 +22,13 @@
   - name: "Stop Workers"
     command: screen -X -S H-Worker quit
     become: yes
+    ignore_errors: yes
+
+    # Stop any sessions created as non-root by mistake
+
+  - name: "Stop Workers (non-root)"
+    command: screen -X -S H-Worker quit
+    become: no
     ignore_errors: yes
 
 - hosts: master:workers
