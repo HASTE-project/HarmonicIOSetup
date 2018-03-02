@@ -7,6 +7,3 @@
     command: screen -X -S H-Monitoring quit
     become_user: ubuntu
     ignore_errors: yes
-
-
-

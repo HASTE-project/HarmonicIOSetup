@@ -5,10 +5,15 @@
 
   - name: "Stop Master"
     command: screen -X -S H-Master quit
-    become_user: ubuntu
+    become: yes
     ignore_errors: yes
 
+    # Stop any sessions created as non-root by mistake
 
+  - name: "Stop Master"
+    command: screen -X -S H-Master quit
+    become: no
+    ignore_errors: yes
 
 - hosts: workers
 
@@ -19,6 +24,20 @@
     become: yes
     ignore_errors: yes
 
+    # Stop any sessions created as non-root by mistake
 
+  - name: "Stop Workers (non-root)"
+    command: screen -X -S H-Worker quit
+    become: no
+    ignore_errors: yes
+
+- hosts: master:workers
+
+  tasks:
+
+  - name: "Remove Dead Screens"
+    command: screen -wipe
+    become: yes
+    ignore_errors: yes
 
 
