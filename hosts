@@ -12,16 +12,6 @@ hio-worker-prod-0-7
 hio-worker-prod-0-8
 hio-worker-prod-0-9
 hio-worker-prod-0-10
-hio-worker-prod-0-11
-hio-worker-prod-0-12
-hio-worker-prod-0-13
-hio-worker-prod-0-14
-hio-worker-prod-0-15
-hio-worker-prod-0-16
-hio-worker-prod-0-17
-hio-worker-prod-0-18
-hio-worker-prod-0-19
-hio-worker-prod-0-20
 
 #workernode0 ansible_ssh_host=<Worker-node node private IP >
 #workernode0 ansible_ssh_host=xxx
@@ -63,16 +53,6 @@ hio-worker-prod-0-7
 hio-worker-prod-0-8
 hio-worker-prod-0-9
 hio-worker-prod-0-10
-hio-worker-prod-0-11
-hio-worker-prod-0-12
-hio-worker-prod-0-13
-hio-worker-prod-0-14
-hio-worker-prod-0-15
-hio-worker-prod-0-16
-hio-worker-prod-0-17
-hio-worker-prod-0-18
-hio-worker-prod-0-19
-hio-worker-prod-0-20
 
 [workers:vars]
 ansible_python_interpreter=/usr/bin/python3
