@@ -19,6 +19,11 @@
 
   tasks: 
 
+  - name: "Stop Containers"
+    shell: docker stop $(docker ps -a -q)
+    become: True
+    ignore_errors: true
+
   - name: "Stop Workers"
     command: screen -X -S H-Worker quit
     become: yes
