@@ -1,6 +1,6 @@
 
 # Only worker needs to be started as root, but start them both as root,
-# so that all HIO screen sessions are associated with the same user (to avoid cofusion).
+# so that all HIO screen sessions are associated with the same user (to avoid confusion).
 
 - hosts: master
 

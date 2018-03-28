@@ -25,6 +25,11 @@ Start HarmonicIO:
 ansible-playbook -i hosts playbooks/startMasterWorker.yml
 ```
 
+Stop, Start & Verify Harmomic IO:
+```
+ansible-playbook -i hosts playbooks/stopMasterWorker.yml ; ansible-playbook -i hosts playbooks/startMasterWorker.yml ; ansible -i hosts workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
+```
+
 Check if HarmonicIO is running (by checking for screen sessions):
 ```
 ansible --become -i hosts workers:master -a "screen -ls"
@@ -34,6 +39,12 @@ ansible --become -i hosts workers:master -a "screen -ls"
 ```
 ansible -i hosts workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
 ```
+
+...see what containers are running
+```
+ansible -i hosts --become workers -a "docker ps"
+```
+
 
 Stop HarmonicIO:
 ```
