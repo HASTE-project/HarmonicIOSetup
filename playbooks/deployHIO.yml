@@ -123,7 +123,7 @@
         owner: root
     become: yes
 
-  - name: "reload supervisord"
+  - name: "start supervisord harmonicIO master service"
     supervisorctl:
         name: harmonic_master
         state: started
@@ -139,7 +139,7 @@
         owner: root
     become: yes
 
-  - name: "reload supervisord"
+  - name: "start supervisord harmonicIO worker service"
     supervisorctl:
         name: harmonic_worker
         state: started
