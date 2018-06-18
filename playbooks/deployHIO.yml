@@ -46,6 +46,23 @@
       name: docker
       state: restarted
 
+# Install Supervisord
+
+  - name: "install supervisord"
+    become: yes
+    apt:
+        name: {{item}}
+        state: present
+        update_cache: yes
+    with_items:
+            - supervisor
+
+  - name: "start supervisord service"
+    become: yes
+    service:
+        name: supervisor
+        state: restarted
+
 - hosts: master:workers
 
   tasks:
@@ -94,3 +111,35 @@
     become: yes
     with_items:
       - "{{ groups['master'] }}"
+
+- hosts: master
+
+  tasks:
+
+  - name: "setup supervisord service configuration file for harmonicIO master"
+    template:
+        src: ../configurationTemplates/harmonic_master.conf.j2
+        dest: /etc/supervisor/conf.d/harmonic_master.conf
+        owner: root
+    become: yes
+
+  - name: "reload supervisord"
+    supervisorctl:
+        name: harmonic_master
+        state: started
+
+- hosts: workers
+
+  tasks:
+
+  - name: "setup supervisord service configuration file for harmonicIO worker"
+    template:
+        src: ../configurationTemplates/harmonic_worker.conf.j2
+        dest: /etc/supervisor/conf.d/harmonic_worker.conf
+        owner: root
+    become: yes
+
+  - name: "reload supervisord"
+    supervisorctl:
+        name: harmonic_worker
+        state: started
