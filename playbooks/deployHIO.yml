@@ -127,6 +127,7 @@
     supervisorctl:
         name: harmonic_master
         state: started
+    become: yes
 
 - hosts: workers
 
@@ -143,3 +144,4 @@
     supervisorctl:
         name: harmonic_worker
         state: started
+    become: yes
