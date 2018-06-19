@@ -10,6 +10,11 @@ Run the install_ansible script to install ansible then edit the hosts file with 
 Ports for the master and workers can be edited inside the `deployHIO.yml` script
 
 
+For the HPC2N production pipeline, use:
+```
+-i hosts_production_HPC2N
+```
+
 Run an ad-hoc command on all hosts to test SSH connectivity:
 ```
 ansible -i hosts workers:master -a "echo hi!"
