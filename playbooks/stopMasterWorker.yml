@@ -1,17 +1,20 @@
+
+# Sometimes more than one screen session can exist with the same name, hence the for loop.
+# See: https://unix.stackexchange.com/questions/20435/killing-multiple-gnu-screen-sessions-with-the-same-name
  
 - hosts: master
 
   tasks:
 
   - name: "Stop Master"
-    command: screen -X -S H-Master quit
+    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Master'); do screen -S "${session}" -X quit; done
     become: yes
     ignore_errors: yes
 
     # Stop any sessions created as non-root by mistake
 
   - name: "Stop Master"
-    command: screen -X -S H-Master quit
+    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Master'); do screen -S "${session}" -X quit; done
     become: no
     ignore_errors: yes
 
@@ -25,14 +28,14 @@
     ignore_errors: true
 
   - name: "Stop Workers"
-    command: screen -X -S H-Worker quit
+    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Worker'); do screen -S "${session}" -X quit; done
     become: yes
     ignore_errors: yes
 
     # Stop any sessions created as non-root by mistake
 
   - name: "Stop Workers (non-root)"
-    command: screen -X -S H-Worker quit
+    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Worker'); do screen -S "${session}" -X quit; done
     become: no
     ignore_errors: yes
 
@@ -40,9 +43,13 @@
 
   tasks:
 
-  - name: "Remove Dead Screens"
-    command: screen -wipe
+  - name: "Remove any Dead Screens"
+    shell: screen -wipe
     become: yes
     ignore_errors: yes
 
+  - name: "Remove any Dead Screens (non-root)"
+    shell: screen -wipe
+    become: no
+    ignore_errors: yes
 
