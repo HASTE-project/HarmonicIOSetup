@@ -12,48 +12,48 @@ Ports for the master and workers can be edited inside the `deployHIO.yml` script
 
 For the HPC2N production pipeline, use:
 ```
--i hosts_production_HPC2N
+-i hosts_HPC2N-haste-prod
 ```
 
 Run an ad-hoc command on all hosts to test SSH connectivity:
 ```
-ansible -i hosts workers:master -a "echo hi!"
+ansible -i hosts_HPC2N-haste-prod all -a "echo hi"
 ```
 
 Run the deployHIO playbook to install HarmonicIO:
 ```
-ansible-playbook -i hosts playbooks/deployHIO.yml
+ansible-playbook -i hosts_HPC2N-haste-prod playbooks/deployHIO.yml
 ```
 
 Start HarmonicIO:
 ```
-ansible-playbook -i hosts playbooks/startMasterWorker.yml
+ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml
 ```
 
 Stop, Start & Verify Harmomic IO:
 ```
-ansible-playbook -i hosts playbooks/stopMasterWorker.yml ; ansible-playbook -i hosts playbooks/startMasterWorker.yml ; ansible -i hosts workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
+ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml ; ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml ; ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
 ```
 
 Check if HarmonicIO is running (by checking for screen sessions):
 ```
-ansible --become -i hosts workers:master -a "screen -ls"
+ansible --become -i hosts_HPC2N-haste-prod workers:master -a "screen -ls"
 ```
 
 ...by checking for the listening ports (8888 and 8080):
 ```
-ansible -i hosts workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
+ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
 ```
 
 ...see what containers are running
 ```
-ansible -i hosts --become workers -a "docker ps"
+ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps"
 ```
 
 
 Stop HarmonicIO:
 ```
-ansible-playbook -i hosts playbooks/stopMasterWorker.yml
+ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml
 ```
 
 
