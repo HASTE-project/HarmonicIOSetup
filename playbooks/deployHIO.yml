@@ -46,23 +46,6 @@
       name: docker
       state: restarted
 
-# Install Supervisord
-
-  - name: "install supervisord"
-    become: yes
-    apt:
-        name: {{item}}
-        state: present
-        update_cache: yes
-    with_items:
-            - supervisor
-
-  - name: "start supervisord service"
-    become: yes
-    service:
-        name: supervisor
-        state: restarted
-
 - hosts: master:workers
 
   tasks:
@@ -112,6 +95,35 @@
     with_items:
       - "{{ groups['master'] }}"
 
+# Install Supervisord
+
+  - name: "install supervisord"
+    become: yes
+    apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+    with_items:
+            - supervisor
+
+  - name: "supervisor service log directory"
+    become: yes
+    file:
+        path: /var/log/supervisor
+        state: directory
+
+  - name: "harmonicIO service log directory"
+    become: yes
+    file:
+        path: /home/ubuntu/HarmonicIO/logs
+        state: directory
+
+  - name: "start supervisord service"
+    become: yes
+    service:
+        name: supervisor
+        state: restarted
+
 - hosts: master
 
   tasks:
@@ -121,6 +133,21 @@
         src: ../configurationTemplates/harmonic_master.conf.j2
         dest: /etc/supervisor/conf.d/harmonic_master.conf
         owner: root
+    become: yes
+
+  - name: "harmonicIO master service stdout stderr log files"
+    become: yes
+    file:
+        path: /home/ubuntu/HarmonicIO/logs/{{ item }}
+        state: touch
+    with_items:
+      - harmonic_master.log
+      - harmonic_master.err
+
+  - name: "add supervisord harmonicIO master service"
+    supervisorctl:
+        name: harmonic_master
+        state: present
     become: yes
 
   - name: "start supervisord harmonicIO master service"
@@ -138,6 +165,21 @@
         src: ../configurationTemplates/harmonic_worker.conf.j2
         dest: /etc/supervisor/conf.d/harmonic_worker.conf
         owner: root
+    become: yes
+
+  - name: "harmonicIO worker service stdout stderr log files"
+    become: yes
+    file:
+        path: /home/ubuntu/HarmonicIO/logs/{{ item }}
+        state: touch
+    with_items:
+      - harmonic_worker.log
+      - harmonic_worker.err
+
+  - name: "add supervisord harmonicIO worker service"
+    supervisorctl:
+        name: harmonic_worker
+        state: present
     become: yes
 
   - name: "start supervisord harmonicIO worker service"
