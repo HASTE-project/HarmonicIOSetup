@@ -1,55 +1,20 @@
-
-# Sometimes more than one screen session can exist with the same name, hence the for loop.
-# See: https://unix.stackexchange.com/questions/20435/killing-multiple-gnu-screen-sessions-with-the-same-name
  
 - hosts: master
 
   tasks:
 
   - name: "Stop Master"
-    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Master'); do screen -S "${session}" -X quit; done
-    become: yes
-    ignore_errors: yes
-
-    # Stop any sessions created as non-root by mistake
-
-  - name: "Stop Master"
-    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Master'); do screen -S "${session}" -X quit; done
-    become: no
-    ignore_errors: yes
+    supervisorctl:
+        name: harmonic_master
+        state: stopped
+    become: true
 
 - hosts: workers
 
   tasks: 
 
-  - name: "Stop Containers"
-    shell: docker stop $(docker ps -a -q)
-    become: True
-    ignore_errors: true
-
   - name: "Stop Workers"
-    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Worker'); do screen -S "${session}" -X quit; done
-    become: yes
-    ignore_errors: yes
-
-    # Stop any sessions created as non-root by mistake
-
-  - name: "Stop Workers (non-root)"
-    shell: for session in $(screen -ls | grep -o '[0-9]*\.H-Worker'); do screen -S "${session}" -X quit; done
-    become: no
-    ignore_errors: yes
-
-- hosts: master:workers
-
-  tasks:
-
-  - name: "Remove any Dead Screens"
-    shell: screen -wipe
-    become: yes
-    ignore_errors: yes
-
-  - name: "Remove any Dead Screens (non-root)"
-    shell: screen -wipe
-    become: no
-    ignore_errors: yes
-
+    supervisorctl:
+        name: harmonic_worker
+        state: stopped
+    become: true

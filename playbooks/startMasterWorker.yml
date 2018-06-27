@@ -1,29 +1,20 @@
 
-# Only worker needs to be started as root, but start them both as root,
-# so that all HIO screen sessions are associated with the same user (to avoid confusion).
-
 - hosts: master
 
   tasks:
 
   - name: "Run Master"
-    command: screen -S H-Master -dm ./runMaster.sh
-    args:
-      chdir: /home/ubuntu/HarmonicIO/
+    supervisorctl:
+        name: harmonic_master
+        state: started
     become: true
-
-
 
 - hosts: workers
 
   tasks: 
 
   - name: "Run Worker"
-    command: screen -S H-Worker -dm ./runWorker.sh
-    args:
-      chdir: /home/ubuntu/HarmonicIO/
+    supervisorctl:
+        name: harmonic_worker
+        state: started
     become: true
-
-
-
-
