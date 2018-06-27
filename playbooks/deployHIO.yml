@@ -135,6 +135,7 @@
         owner: root
     become: yes
 
+    # Supervisor cannot create log files if it doesn't exist
   - name: "harmonicIO master service stdout stderr log files"
     become: yes
     file:
@@ -144,6 +145,7 @@
       - harmonic_master.log
       - harmonic_master.err
 
+    # This task is necessary for supervisor to read child process configurations
   - name: "add supervisord harmonicIO master service"
     supervisorctl:
         name: harmonic_master
@@ -167,6 +169,7 @@
         owner: root
     become: yes
 
+    # Supervisor cannot create log files if it doesn't exist
   - name: "harmonicIO worker service stdout stderr log files"
     become: yes
     file:
@@ -176,6 +179,7 @@
       - harmonic_worker.log
       - harmonic_worker.err
 
+    # This task is necessary for supervisor to read child process configurations
   - name: "add supervisord harmonicIO worker service"
     supervisorctl:
         name: harmonic_worker
