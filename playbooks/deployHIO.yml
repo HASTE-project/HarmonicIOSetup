@@ -100,22 +100,15 @@
   - name: "install supervisord"
     become: yes
     apt:
-        name: "{{ item }}"
+        name: supervisor
         state: present
         update_cache: yes
-    with_items:
-            - supervisor
 
+# This task is to address a know issue with supervisor, see https://github.com/Supervisor/supervisor/issues/121
   - name: "supervisor service log directory"
     become: yes
     file:
         path: /var/log/supervisor
-        state: directory
-
-  - name: "harmonicIO service log directory"
-    become: yes
-    file:
-        path: /home/ubuntu/HarmonicIO/logs
         state: directory
 
   - name: "start supervisord service"
@@ -135,23 +128,6 @@
         owner: root
     become: yes
 
-    # Supervisor cannot create log files if it doesn't exist
-  - name: "harmonicIO master service stdout stderr log files"
-    become: yes
-    file:
-        path: /home/ubuntu/HarmonicIO/logs/{{ item }}
-        state: touch
-    with_items:
-      - harmonic_master.log
-      - harmonic_master.err
-
-    # This task is necessary for supervisor to read child process configurations
-  - name: "add supervisord harmonicIO master service"
-    supervisorctl:
-        name: harmonic_master
-        state: present
-    become: yes
-
   - name: "start supervisord harmonicIO master service"
     supervisorctl:
         name: harmonic_master
@@ -167,23 +143,6 @@
         src: ../configurationTemplates/harmonic_worker.conf.j2
         dest: /etc/supervisor/conf.d/harmonic_worker.conf
         owner: root
-    become: yes
-
-    # Supervisor cannot create log files if it doesn't exist
-  - name: "harmonicIO worker service stdout stderr log files"
-    become: yes
-    file:
-        path: /home/ubuntu/HarmonicIO/logs/{{ item }}
-        state: touch
-    with_items:
-      - harmonic_worker.log
-      - harmonic_worker.err
-
-    # This task is necessary for supervisor to read child process configurations
-  - name: "add supervisord harmonicIO worker service"
-    supervisorctl:
-        name: harmonic_worker
-        state: present
     become: yes
 
   - name: "start supervisord harmonicIO worker service"
