@@ -28,7 +28,6 @@ ansible -i hosts_HPC2N-haste-prod all -a "echo hi"
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/deployHIO.yml
 ```
-
 ---
 
 **Note: Run the following only when manual intervention is deemed necessary**
@@ -61,47 +60,16 @@ ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps"
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml
 ```
+
+* Ad-hoc commands to start, stop, restart, verify supervisor child processes
+
+```
+ansible -i hosts_HPC2N-haste-prod master:workers -a "sudo supervisorctl status"
+```
 ---
 
 # Send containers to Worker
 
 ```
 curl -X POST "http://<private_IP_of_worker>:<port>/docker?token=None&command=create" --data '{"c_name" : "Container_name", "num" : 0}'
-```
-
----
-
-# Ad-hoc commands to start, stop, restart, verify supervisor child processes [ harmonicio_master ; harmonicio_worker ]
-
-* Start
-
-```
-ansible -i hosts_HPC2N-haste-prod master -a "sudo supervisorctl start harmonic_master"
-```
-```
-ansible -i hosts_HPC2N-haste-prod workers -a "sudo supervisorctl start harmonic_worker"
-```
-
-* Stop
-
-```
-ansible -i hosts_HPC2N-haste-prod master -a "sudo supervisorctl stop harmonic_master"
-```
-```
-ansible -i hosts_HPC2N-haste-prod workers -a "sudo supervisorctl stop harmonic_worker"
-```
-
-* Restart
-
-```
-ansible -i hosts_HPC2N-haste-prod master -a "sudo supervisorctl restart harmonic_master"
-```
-```
-ansible -i hosts_HPC2N-haste-prod workers -a "sudo supervisorctl restart harmonic_worker"
-```
-
-* Verify (check status)
-
-```
-ansible -i hosts_HPC2N-haste-prod master:workers -a "sudo supervisorctl status"
 ```
