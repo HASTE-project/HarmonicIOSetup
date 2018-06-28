@@ -61,7 +61,7 @@ ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps"
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml
 ```
 
-* Ad-hoc command to check the status supervisor child processes
+* Ad-hoc command to check the status of supervisor child processes
 
 ```
 ansible -i hosts_HPC2N-haste-prod master:workers -a "sudo supervisorctl status"
