@@ -94,3 +94,59 @@
     become: yes
     with_items:
       - "{{ groups['master'] }}"
+
+# Install Supervisord
+
+  - name: "install supervisord"
+    become: yes
+    apt:
+        name: supervisor
+        state: present
+        update_cache: yes
+
+# This task is to address a know issue with supervisor, see https://github.com/Supervisor/supervisor/issues/121
+  - name: "supervisor service log directory"
+    become: yes
+    file:
+        path: /var/log/supervisor
+        state: directory
+
+  - name: "start supervisord service"
+    become: yes
+    service:
+        name: supervisor
+        state: restarted
+
+- hosts: master
+
+  tasks:
+
+  - name: "setup supervisord service configuration file for harmonicIO master"
+    template:
+        src: ../configurationTemplates/harmonic_master.conf.j2
+        dest: /etc/supervisor/conf.d/harmonic_master.conf
+        owner: root
+    become: yes
+
+  - name: "start supervisord harmonicIO master service"
+    supervisorctl:
+        name: harmonic_master
+        state: started
+    become: yes
+
+- hosts: workers
+
+  tasks:
+
+  - name: "setup supervisord service configuration file for harmonicIO worker"
+    template:
+        src: ../configurationTemplates/harmonic_worker.conf.j2
+        dest: /etc/supervisor/conf.d/harmonic_worker.conf
+        owner: root
+    become: yes
+
+  - name: "start supervisord harmonicIO worker service"
+    supervisorctl:
+        name: harmonic_worker
+        state: started
+    become: yes

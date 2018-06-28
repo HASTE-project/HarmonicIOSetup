@@ -15,47 +15,58 @@ For the HPC2N production pipeline, use:
 -i hosts_HPC2N-haste-prod
 ```
 
-Run an ad-hoc command on all hosts to test SSH connectivity:
+* Run an ad-hoc command on all hosts to test SSH connectivity:
+
 ```
 ansible -i hosts_HPC2N-haste-prod all -a "echo hi"
 ```
 
-Run the deployHIO playbook to install HarmonicIO:
+**Note: The deployment playbook will automatically start HarmonicIO master & workers**
+
+* Run the deployHIO playbook to install HarmonicIO:
+
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/deployHIO.yml
 ```
+---
 
-Start HarmonicIO:
+**Note: Run the following only when manual intervention is deemed necessary**
+
+* Start HarmonicIO:
+
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml
 ```
 
-Stop, Start & Verify Harmomic IO:
+* Stop, Start & Verify Harmomic IO:
+
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml ; ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml ; ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
 ```
 
-Check if HarmonicIO is running (by checking for screen sessions):
-```
-ansible --become -i hosts_HPC2N-haste-prod workers:master -a "screen -ls"
-```
+* Check if HarmonicIO is running, by checking for the listening ports (8888 and 8080):
 
-...by checking for the listening ports (8888 and 8080):
 ```
 ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
 ```
+* ...see what containers are running
 
-...see what containers are running
 ```
 ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps"
 ```
 
+* Stop HarmonicIO:
 
-Stop HarmonicIO:
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml
 ```
 
+* Ad-hoc command to check the status of supervisor child processes
+
+```
+ansible -i hosts_HPC2N-haste-prod master:workers -a "sudo supervisorctl status"
+```
+---
 
 # Send containers to Worker
 

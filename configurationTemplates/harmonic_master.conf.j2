@@ -1,0 +1,9 @@
+[program:harmonic_master]
+user=root								; The User is set to root, in order to access privilaged ports, see issue https://github.com/HASTE-project/HarmonicIO/issues/9
+directory=/home/ubuntu/HarmonicIO					; The absolute path is used as dictated by best practices
+command=python3.5 -m harmonicIO.master
+autostart=true
+autorestart=true
+startretires=3
+stdout_logfile=/home/ubuntu/HarmonicIO/harmonic_master.log		; If relative path is used the log files aren't generated
+stderr_logfile=/home/ubuntu/HarmonicIO/harmonic_master.err
