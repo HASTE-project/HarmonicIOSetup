@@ -38,7 +38,7 @@ ansible-playbook -i hosts_HPC2N-haste-prod playbooks/deployHIO.yml
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml
 ```
 
-* Stop, Start & Verify Harmomic IO:
+* Stop, Start & Verify Harmonic IO:
 
 ```
 ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml ; ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml ; ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --listening --tcp | grep --line-buffered --extended \"(8080|8888)\"'"
@@ -52,7 +52,7 @@ ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --
 * ...see what containers are running
 
 ```
-ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps"
+ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps --all -n 10"
 ```
 
 * Stop HarmonicIO:
@@ -68,8 +68,15 @@ ansible -i hosts_HPC2N-haste-prod master:workers -a "sudo supervisorctl status"
 ```
 ---
 
+
 # Send containers to Worker
 
 ```
 curl -X POST "http://<private_IP_of_worker>:<port>/docker?token=None&command=create" --data '{"c_name" : "Container_name", "num" : 0}'
+```
+
+# Start containers on all the workers (this example for HPC2N needs to be run from inside the cloud):
+
+```
+for i in {1..10}; do curl -X POST "http://hio-worker-prod-0-${i}:8888/docker?token=None&command=create" --data '{"c_name" : "benblamey/haste-image-proc:latest", "num" : 1}'; done
 ```
