@@ -52,7 +52,7 @@ ansible -i hosts_HPC2N-haste-prod workers:master -a "sh -c 'netstat --numeric --
 * ...see what containers are running
 
 ```
-ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps --all -n 10"
+ansible -i hosts_HPC2N-haste-prod --become workers -a "docker ps --all -n 1"
 ```
 
 * Stop HarmonicIO:
@@ -74,6 +74,15 @@ ansible -i hosts_HPC2N-haste-prod master:workers -a "sudo supervisorctl status"
 ```
 curl -X POST "http://<private_IP_of_worker>:<port>/docker?token=None&command=create" --data '{"c_name" : "Container_name", "num" : 0}'
 ```
+
+
+# Restart and re-fetch images:
+```
+ansible-playbook -i hosts_HPC2N-haste-prod playbooks/stopMasterWorker.yml
+ansible-playbook -i hosts_HPC2N-haste-prod playbooks/startMasterWorker.yml
+ansible -i hosts_HPC2N-haste-prod --become workers -a "docker pull benblamey/haste-image-proc:latest"
+```
+
 
 # Start containers on all the workers (this example for HPC2N needs to be run from inside the cloud):
 

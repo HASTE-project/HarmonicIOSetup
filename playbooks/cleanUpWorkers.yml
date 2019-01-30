@@ -2,17 +2,20 @@
 
 - hosts: workers
 
-  tasks: 
+  tasks:
 
   - name: "Stop Containers"
+    become: yes
     shell: docker stop $(docker ps -a -q)
     ignore_errors: true
 
   - name: "remove all docker containers"
+    become: yes
     shell: docker rm $(docker ps -a -q)
     ignore_errors: true
 
   - name: "remove all docker images"
+    become: yes
     shell: docker rmi $(docker images -q)
     ignore_errors: true
 
